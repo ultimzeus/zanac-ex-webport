@@ -210,20 +210,71 @@ def export_area_01_web():
         grid_mt.append(row_40)
         under_mt.append(under_40)
 
+    # Pre-calculate first appearance row for each meta-tile for authentic per-zone palette
+    mt_first_row = {}
+    for r in range(total_rows):
+        for c in range(40):
+            mt = grid_mt[r][c]
+            if mt not in mt_first_row:
+                mt_first_row[mt] = r
+
     # Render clean 256x256 tileset PNG (16x16 grid of 16x16 meta-tiles)
-    pal = pals[0]
     tileset_img = Image.new('RGBA', (256, 256), (0, 0, 0, 0))
     px = tileset_img.load()
-    for mt in list(range(0, 26)) + list(range(64, 256)):
+
+    def draw_subtiles_to_mt(mt, subtiles, pal):
         gx = (mt % 16) * 16
         gy = (mt // 16) * 16
-        st0, st1, st2, st3 = get_st(mt)
-        for st_id, ox, oy in [(st0, 0, 0), (st1, 8, 0), (st2, 0, 8), (st3, 8, 8)]:
+        for st_id, ox, oy in [(subtiles[0], 0, 0), (subtiles[1], 8, 0), (subtiles[2], 0, 8), (subtiles[3], 8, 8)]:
             nibs = engine.subtiles[st_id]
             for py in range(8):
                 for px_i in range(8):
-                    r_c, g_c, b_c = pal[nibs[py * 8 + px_i]]
+                    c_idx = nibs[py * 8 + px_i]
+                    r_c, g_c, b_c = pal[c_idx]
                     px[gx + ox + px_i, gy + oy + py] = (r_c, g_c, b_c, 255)
+
+    # Base tiles with authentic row palettes
+    for mt in list(range(0, 26)) + list(range(64, 256)):
+        row_idx = mt_first_row.get(mt, 0)
+        draw_subtiles_to_mt(mt, get_st(mt), pals[row_idx])
+
+    # Authentic Animated Boss Tile Phases (0% Sprites, 100% Tile Animation)
+    # MT 20 phases: 20 (Phase 0), 26 (Phase 1), 27 (Phase 2), 28 (Phase 3)
+    pal_221 = pals[221]
+    for p_idx, st2 in enumerate([220, 221, 222, 223]):
+        target_mt = 20 if p_idx == 0 else (25 + p_idx)
+        draw_subtiles_to_mt(target_mt, (199, 206, st2, 197), pal_221)
+
+    # MT 3 phases: 3 (Phase 0), 29 (Phase 1), 30 (Phase 2), 31 (Phase 3)
+    indiv_dir = os.path.join(r'e:\Emul\Zanac_WebPort\assets\tiles\boss_extracted', 'individual')
+    for p_idx, fname in enumerate([
+        'oeil_ptit_boss_phase1_ferme.png',
+        'oeil_ptit_boss_phase2_entrouvert.png',
+        'oeil_ptit_boss_phase3_ouvert.png',
+        'oeil_ptit_boss_phase4_critique.png'
+    ]):
+        target_mt = 3 if p_idx == 0 else (28 + p_idx)
+        fpath = os.path.join(indiv_dir, fname)
+        if os.path.exists(fpath):
+            im_eye = Image.open(fpath).convert('RGBA')
+            gx = (target_mt % 16) * 16
+            gy = (target_mt // 16) * 16
+            tileset_img.paste(im_eye, (gx, gy))
+
+    # MT 6 phases: 6 (Phase 0), 32 (Phase 1), 33 (Phase 2), 34 (Phase 3)
+    for p_idx, fname in enumerate([
+        'coeur_segmente_phase1_ferme.png',
+        'coeur_segmente_phase2_fentes.png',
+        'coeur_segmente_phase3_decouvert.png',
+        'coeur_segmente_phase4_surcharge.png'
+    ]):
+        target_mt = 6 if p_idx == 0 else (31 + p_idx)
+        fpath = os.path.join(indiv_dir, fname)
+        if os.path.exists(fpath):
+            im_core = Image.open(fpath).convert('RGBA')
+            gx = (target_mt % 16) * 16
+            gy = (target_mt // 16) * 16
+            tileset_img.paste(im_core, (gx, gy))
 
     tileset_path = os.path.join(OUT_TILE_DIR, 'area_01_tileset.png')
     tileset_img.save(tileset_path)

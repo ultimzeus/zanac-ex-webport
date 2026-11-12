@@ -614,7 +614,8 @@
           "score": 8000,
           "destroyed_mt": 18,
           "fireCooldown": 45,
-          "fireRate": 75
+          "fireRate": 75,
+          "mt": 20
         }
       ],
       "bonusScore": 8000,
@@ -644,7 +645,8 @@
           "score": 500,
           "destroyed_mt": 21,
           "fireCooldown": 70,
-          "fireRate": 110
+          "fireRate": 110,
+          "mt": 23
         },
         {
           "id": "radar_left",
@@ -657,7 +659,8 @@
           "score": 500,
           "destroyed_mt": 21,
           "fireCooldown": 80,
-          "fireRate": 120
+          "fireRate": 120,
+          "mt": 23
         },
         {
           "id": "core_center",
@@ -674,7 +677,8 @@
           "score": 10000,
           "destroyed_mt": 21,
           "fireCooldown": 40,
-          "fireRate": 70
+          "fireRate": 70,
+          "mt": 3
         },
         {
           "id": "radar_right",
@@ -687,7 +691,8 @@
           "score": 500,
           "destroyed_mt": 21,
           "fireCooldown": 90,
-          "fireRate": 120
+          "fireRate": 120,
+          "mt": 23
         },
         {
           "id": "radar_bottom",
@@ -700,7 +705,8 @@
           "score": 500,
           "destroyed_mt": 21,
           "fireCooldown": 100,
-          "fireRate": 110
+          "fireRate": 110,
+          "mt": 23
         }
       ],
       "bonusScore": 10000,
@@ -736,7 +742,8 @@
           "score": 1000,
           "destroyed_mt": 21,
           "fireCooldown": 50,
-          "fireRate": 85
+          "fireRate": 85,
+          "mt": 4
         },
         {
           "id": "turret_tr",
@@ -753,7 +760,8 @@
           "score": 1000,
           "destroyed_mt": 21,
           "fireCooldown": 65,
-          "fireRate": 85
+          "fireRate": 85,
+          "mt": 4
         },
         {
           "id": "core_tl",
@@ -770,7 +778,8 @@
           "score": 7500,
           "destroyed_mt": 21,
           "fireCooldown": 40,
-          "fireRate": 80
+          "fireRate": 80,
+          "mt": 6
         },
         {
           "id": "core_tr",
@@ -787,7 +796,8 @@
           "score": 7500,
           "destroyed_mt": 21,
           "fireCooldown": 50,
-          "fireRate": 80
+          "fireRate": 80,
+          "mt": 6
         },
         {
           "id": "core_bl",
@@ -804,7 +814,8 @@
           "score": 7500,
           "destroyed_mt": 21,
           "fireCooldown": 60,
-          "fireRate": 80
+          "fireRate": 80,
+          "mt": 6
         },
         {
           "id": "core_br",
@@ -821,7 +832,8 @@
           "score": 7500,
           "destroyed_mt": 21,
           "fireCooldown": 70,
-          "fireRate": 80
+          "fireRate": 80,
+          "mt": 6
         },
         {
           "id": "turret_bl",
@@ -838,7 +850,8 @@
           "score": 1000,
           "destroyed_mt": 21,
           "fireCooldown": 75,
-          "fireRate": 85
+          "fireRate": 85,
+          "mt": 4
         },
         {
           "id": "turret_br",
@@ -855,7 +868,8 @@
           "score": 1000,
           "destroyed_mt": 21,
           "fireCooldown": 85,
-          "fireRate": 85
+          "fireRate": 85,
+          "mt": 4
         }
       ],
       "bonusScore": 30000,

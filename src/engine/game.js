@@ -11,7 +11,7 @@
  * - Key [B]: Debug shortcut to cycle and jump directly to boss encounters!
  */
 
-import { MapRenderer } from './mapRenderer.js?v=boss_per_area_v1';
+import { MapRenderer } from './mapRenderer.js?v=msx_pure_tiles_v1';
 import { SpriteManager } from './spriteManager.js?v=turbo_scroll_v1';
 import { AudioManager } from './audio.js?v=turbo_scroll_v1';
 import { WeaponsManager } from '../logic/weapons.js?v=turbo_scroll_v1';
@@ -142,9 +142,9 @@ export class ZanacGame {
 
     this.map = new MapRenderer(this.app, this.layers.ground);
     await this.map.loadMap(
-      `assets/maps/640px_ex/area_${areaStr}_grid.json?v=modular_boss_grid_v2`,
-      `assets/tiles/area_${areaStr}_tileset.png?v=modular_boss_grid_v2`,
-      'src/data/boss_encounters.json?v=modular_boss_grid_v2'
+      `assets/maps/640px_ex/area_${areaStr}_grid.json?v=msx_pure_tiles_v1`,
+      `assets/tiles/area_${areaStr}_tileset.png?v=msx_pure_tiles_v1`,
+      'src/data/boss_encounters.json?v=msx_pure_tiles_v1'
     );
 
     // Setup Boss Event Hooks
@@ -825,22 +825,14 @@ export class ZanacGame {
             }
           }
 
-          // Universal eye shutter system (Petit Cœur 32x32, Gros Cœur 32x32/64x64)
+          // Universal 100% tile-based eye shutter system (MSX2 pure tile animation, 0% sprites)
           if (comp.hasEyeShutter || comp.type === 'mini_core' || comp.type === 'boss_core') {
             comp.hasEyeShutter = true;
             comp.eyeType = comp.eyeType || (comp.type === 'mini_core' ? 'petit' : 'gros');
             comp.eyePhase = 0; // 0: Closed, 1: Slit, 2: Half, 3: Open
             comp.animTimer = 50; // Starts opening in ~0.16s
             comp.invulnerable = true;
-
-            const eyePrefix = comp.eyeType === 'petit' ? 'comp_eye_petit' : 'comp_eye_gros';
-            const eyeTex = this.sprites.get(`${eyePrefix}_0_2x`) || this.sprites.get('comp_eye_phase_0_2x');
-            const eyeSprite = new PIXI.Sprite(eyeTex);
-            eyeSprite.anchor.set(0.5);
-            eyeSprite.scale.set(1.0); // Crisp 32x32 at 2x
-            eyeSprite.visible = false;
-            this.layers.groundItems.addChild(eyeSprite);
-            comp.spriteRef = eyeSprite;
+            comp.spriteRef = null; // Pure tilegrid rendering, zero sprites
           }
 
           return comp;
@@ -1037,9 +1029,9 @@ export class ZanacGame {
     // Load new map & tileset for targetArea!
     const pad = (n) => String(n).padStart(2, '0');
     const areaStr = pad(this.currentArea);
-    const gridUrl = `assets/maps/640px_ex/area_${areaStr}_grid.json?v=modular_boss_grid_v2`;
-    const tilesetUrl = `assets/tiles/area_${areaStr}_tileset.png?v=modular_boss_grid_v2`;
-    await this.map.loadMap(gridUrl, tilesetUrl, 'src/data/boss_encounters.json?v=modular_boss_grid_v2');
+    const gridUrl = `assets/maps/640px_ex/area_${areaStr}_grid.json?v=msx_pure_tiles_v1`;
+    const tilesetUrl = `assets/tiles/area_${areaStr}_tileset.png?v=msx_pure_tiles_v1`;
+    await this.map.loadMap(gridUrl, tilesetUrl, 'src/data/boss_encounters.json?v=msx_pure_tiles_v1');
     this.setupGroundStructures();
 
     this.audio.resumeAreaBgm(this.currentArea);
@@ -1075,7 +1067,7 @@ export class ZanacGame {
         }
 
         // Universal animated eye shutter state machine: 4.0s @ 60Hz (authentic Compile cycle)
-        if (comp.hasEyeShutter) {
+        if (comp.hasEyeShutter && !comp.destroyed) {
           comp.animTimer = (comp.animTimer || 0) + deltaFrames;
           const t = comp.animTimer % 240;
 
@@ -1096,21 +1088,16 @@ export class ZanacGame {
           // Armored eyelid: only vulnerable when fully open (Phase 3)
           comp.invulnerable = (comp.eyePhase !== 3);
 
-          const eyePrefix = comp.eyeType === 'petit' ? 'comp_eye_petit' : 'comp_eye_gros';
-          let texName = `${eyePrefix}_${comp.eyePhase}_2x`;
-          if (comp.eyePhase === 3 && isPulsing) {
-            texName = `${eyePrefix}_3_pulse_2x`;
+          // 100% Tile-based animation (MSX2 VRAM pattern swap simulation, 0% sprites)
+          const targetMt = comp.mt || comp.initialMt;
+          if (targetMt && this.map.setBossEyePhase) {
+            this.map.setBossEyePhase(targetMt, comp.eyePhase);
           }
-          const eyeTex = this.sprites.get(texName) || this.sprites.get(`comp_eye_phase_${comp.eyePhase}_2x`);
-          if (eyeTex && comp.spriteRef) comp.spriteRef.texture = eyeTex;
         }
 
-        // Damage flash
+        // Hit flash decay
         if (comp.hitFlash > 0) {
           comp.hitFlash -= deltaFrames;
-          if (comp.spriteRef) comp.spriteRef.tint = 0xFFAAAA;
-        } else {
-          if (comp.spriteRef) comp.spriteRef.tint = 0xFFFFFF;
         }
       });
     });

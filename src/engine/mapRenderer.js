@@ -123,6 +123,16 @@ export class MapRenderer {
       this.tileTextures.push(new PIXI.Texture({ source: this.tilesetTexture.source, frame }));
     }
 
+    // Authentic MSX Animated Boss Tile Phases (0% Sprites, 100% Tile Animation)
+    // MT 20: 20 (Phase 0), 26 (Phase 1), 27 (Phase 2), 28 (Phase 3)
+    // MT 3:   3 (Phase 0), 29 (Phase 1), 30 (Phase 2), 31 (Phase 3)
+    // MT 6:   6 (Phase 0), 32 (Phase 1), 33 (Phase 2), 34 (Phase 3)
+    this.animatedBossTiles = {
+      20: [this.tileTextures[20], this.tileTextures[26], this.tileTextures[27], this.tileTextures[28]],
+      3:  [this.tileTextures[3],  this.tileTextures[29], this.tileTextures[30], this.tileTextures[31]],
+      6:  [this.tileTextures[6],  this.tileTextures[32], this.tileTextures[33], this.tileTextures[34]],
+    };
+
     // 4. Pre-instantiate sprite pool for off-screen rendering
     const numSprites = this.cols * (this.visibleRows + 2);
     for (let i = 0; i < numSprites; i++) {
@@ -172,6 +182,16 @@ export class MapRenderer {
     if (!this.gridData) return;
     const under = this.gridData.under_mt[row][col];
     this.gridData.grid_mt[row][col] = under;
+  }
+
+  // 100% Tile-based animated boss eye phase (MSX2 VRAM pattern swap simulation)
+  setBossEyePhase(mt, phase) {
+    if (this.animatedBossTiles && this.animatedBossTiles[mt]) {
+      const tex = this.animatedBossTiles[mt][phase] || this.animatedBossTiles[mt][0];
+      if (tex) {
+        this.tileTextures[mt] = tex;
+      }
+    }
   }
 
   // --- Scroll & State Machine Update (60 Hz) ---

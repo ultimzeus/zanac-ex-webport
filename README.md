@@ -103,3 +103,4 @@ To continue developing this project with Gemini 1.5 Pro / 2.0 on **Google AI Stu
    * `src/data/boss_encounters.json`
 3. Set System Instructions:
    > "You are an expert game developer working on Zanac EX WebPort, an authentic MSX2 Compile Z80 shooter in PixiJS v8. All physics and animations must remain frame-rate independent via ticker.deltaTime, boss components mutate directly into the grid_mt/under_mt tilegrid, and 2x remastered pixel art must be preserved."
+
