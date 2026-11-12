@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>ZANAC EX - Test Audio Area 1 (Découpage & Boucle)</title>
+  <style>
+    body {
+      background: #0d1117;
+      color: #e6edf3;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 30px;
+      margin: 0;
+    }
+    h1 {
+      color: #58a6ff;
+      margin-bottom: 5px;
+    }
+    p.sub {
+      color: #8b949e;
+      margin-top: 0;
+      margin-bottom: 25px;
+    }
+    .card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      max-width: 800px;
+    }
+    .card h3 {
+      margin-top: 0;
+      color: #7ee787;
+    }
+    .card.danger h3 {
+      color: #f85149;
+    }
+    .btn {
+      background: #238636;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      font-size: 14px;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-right: 10px;
+      margin-bottom: 8px;
+    }
+    .btn:hover {
+      background: #2ea043;
+    }
+    .btn.stop {
+      background: #da3633;
+    }
+    .btn.stop:hover {
+      background: #f85149;
+    }
+    .btn.secondary {
+      background: #30363d;
+    }
+    .btn.secondary:hover {
+      background: #8b949e;
+      color: #0d1117;
+    }
+    .status {
+      margin-top: 10px;
+      font-family: monospace;
+      color: #58a6ff;
+      min-height: 20px;
+    }
+    audio {
+      margin-top: 10px;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎵 ZANAC EX - Découpage Musical Area 1</h1>
+  <p class="sub">Test interactif des 3 parties : Intro, Boucle continue, et Fade Out supprimé.</p>
+
+  <div class="card">
+    <h3>1. Intro Seule (À jouer une seule fois)</h3>
+    <p>Durée : <strong>3.380 secondes</strong> (Batterie & roulement d'accroche initial). Ne sera plus rejoué lors des boucles.</p>
+    <audio controls src="assets/music/ex_stereo/area1_intro.wav"></audio>
+  </div>
+
+  <div class="card">
+    <h3>2. Main Part - Boucle Infinie (Sans fade out)</h3>
+    <p>Partie centrale qui tourne en boucle continue sans jamais s'arrêter ni faiblir :</p>
+    <p>• <strong>Version 1 Cycle</strong> (26.71s) :</p>
+    <audio controls loop src="assets/music/ex_stereo/area1_main_single.wav"></audio>
+    <p style="margin-top: 15px;">• <strong>Version 2 Cycles</strong> (53.42s - variations de batterie et de synthé) :</p>
+    <audio controls loop src="assets/music/ex_stereo/area1_main_double.wav"></audio>
+  </div>
+
+  <div class="card danger">
+    <h3>3. Fade Out (Partie supprimée)</h3>
+    <p>Durée : <strong>6.440 secondes</strong> (Baisse de volume de fin de piste de l'album original, désormais éliminée du jeu).</p>
+    <audio controls src="assets/music/ex_stereo/area1_fadeout.wav"></audio>
+  </div>
+
+  <div class="card" style="border-color: #58a6ff;">
+    <h3 style="color: #58a6ff;">🎮 Test Enchaînement Jeu Réel (Intro 1 fois ➔ Boucle Infinie Sample-Accurate)</h3>
+    <p>Ce test simule le moteur audio Web Audio API : l'Intro démarre immédiatement, et la boucle démarre à la microseconde exacte où l'intro se termine, puis boucle à l'infini.</p>
+    <button class="btn" onclick="playGameMusic(false)">▶ Lancer Enchaînement (Cycle 26.7s)</button>
+    <button class="btn" onclick="playGameMusic(true)">▶ Lancer Enchaînement (Cycle 53.4s)</button>
+    <button class="btn stop" onclick="stopGameMusic()">⏹ Stop</button>
+    <div id="status" class="status">En attente...</div>
+  </div>
+
+  <script>
+    let ctx = null;
+    let currentSources = [];
+
+    function initCtx() {
+      if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+      if (ctx.state === 'suspended') ctx.resume();
+    }
+
+    function stopGameMusic() {
+      currentSources.forEach(s => {
+        try { s.stop(); } catch(e){}
+      });
+      currentSources = [];
+      document.getElementById('status').innerText = 'Musique arrêtée.';
+    }
+
+    async function playGameMusic(useDoubleCycle) {
+      initCtx();
+      stopGameMusic();
+      const statusEl = document.getElementById('status');
+      statusEl.innerText = 'Chargement des buffers audio haute fidélité...';
+
+      const mainFile = useDoubleCycle ? 'area1_main_double.wav' : 'area1_main_single.wav';
+
+      const [introBuf, mainBuf] = await Promise.all([
+        fetch('assets/music/ex_stereo/area1_intro.wav').then(r => r.arrayBuffer()).then(b => ctx.decodeAudioData(b)),
+        fetch('assets/music/ex_stereo/' + mainFile).then(r => r.arrayBuffer()).then(b => ctx.decodeAudioData(b))
+      ]);
+
+      const startTime = ctx.currentTime + 0.05;
+
+      const introSource = ctx.createBufferSource();
+      introSource.buffer = introBuf;
+      introSource.connect(ctx.destination);
+
+      const mainSource = ctx.createBufferSource();
+      mainSource.buffer = mainBuf;
+      mainSource.loop = true;
+      mainSource.connect(ctx.destination);
+
+      introSource.start(startTime);
+      mainSource.start(startTime + introBuf.duration);
+
+      currentSources = [introSource, mainSource];
+      statusEl.innerText = 'Lecture en cours : [Intro: 0 -> ' + introBuf.duration.toFixed(2) + 's] puis [Main Loop: ' + mainBuf.duration.toFixed(2) + 's en boucle infinie]';
+    }
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,25 @@
+# Root debug / scratch test images
+/*.png
+/*.jpg
+/*.jpeg
+/*.bmp
+
+# Keep game assets
+!assets/**
+
+# Backup and temp files
+*.bak
+*.tmp
+*.log
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# IDE / Editor / Playwright
+.vscode/
+.idea/
+.playwright-mcp/
+Thumbs.db
+.DS_Store

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZANAC EX - 640px Remastered</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    html, body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background-color: #000000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    canvas#gameCanvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      background-color: #000000;
+      border: none;
+      outline: none;
+    }
+  </style>
+  <!-- Offline PixiJS v8 -->
+  <script src="src/lib/pixi.min.js"></script>
+</head>
+<body>
+
+  <canvas id="gameCanvas"></canvas>
+
+  <script type="module">
+    import { ZanacGame } from './src/engine/game.js?v=modular_boss_grid_v2';
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      const canvas = document.getElementById('gameCanvas');
+      const game = new ZanacGame(canvas);
+      window.zanacGame = game;
+
+      try {
+        await game.init();
+        console.log('Zanac EX WebPort initialized in full-height borderless arcade mode!');
+      } catch (err) {
+        console.error('Initialization error:', err);
+      }
+    });
+  </script>
+
+</body>
+</html>

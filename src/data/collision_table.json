@@ -1,0 +1,30 @@
+{
+  "collision_matrix": {
+    "player_vs_enemy": { "player_action": "destroy", "enemy_action": "destroy" },
+    "player_vs_bullet": { "player_action": "destroy", "bullet_action": "destroy" },
+    "player_vs_power_chip": { "player_action": "power_up", "item_action": "collect" },
+    "player_vs_weapon_token": { "player_action": "select_weapon", "item_action": "collect" },
+    "shot_vs_enemy": { "shot_action": "destroy", "enemy_action": "take_damage_1" },
+    "shot_vs_box": { "shot_action": "destroy", "box_action": "take_damage_1" },
+    "shot_vs_ground_turret": { "shot_action": "destroy", "turret_action": "take_damage_1" },
+    "shot_vs_idol": { "shot_action": "destroy", "idol_action": "register_hit" },
+    "subweapon_vs_enemy": { "subweapon_action": "pierce_or_destroy", "enemy_action": "take_weapon_damage" },
+    "subweapon_vs_bullet": { "subweapon_action": "pierce_or_absorb", "bullet_action": "destroy" },
+    "field_shutter_vs_bullet": { "shutter_action": "deplete_durability", "bullet_action": "destroy" },
+    "field_shutter_vs_enemy": { "shutter_action": "deplete_durability", "enemy_action": "destroy" }
+  },
+  "score_awards": {
+    "box": 100,
+    "bullet": 10,
+    "common_enemy": 200,
+    "aerial_cruiser": 300,
+    "stealth_gunship": 800,
+    "ground_turret": 200,
+    "mini_boss": 1500,
+    "base_segment": 500,
+    "base_core": 5000,
+    "power_chip": 100,
+    "weapon_token": 200
+  }
+}
+
